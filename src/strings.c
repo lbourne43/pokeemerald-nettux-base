@@ -1220,3 +1220,5 @@ const u8 gText_CleanseTagTurnOff[] = _("Turned off Cleanse Tag.{PAUSE_UNTIL_PRES
 
 const u8 gText_NettuxHealed[] = _("Healed.{PAUSE_UNTIL_PRESS}");
 const u8 gText_NettuxCantHealHere[] = _("Can't heal here.{PAUSE_UNTIL_PRESS}");
+
+const u8 gText_MenuPC[] = _("PC");

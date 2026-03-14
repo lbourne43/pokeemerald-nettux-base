@@ -2208,4 +2208,6 @@ extern const u8 gText_CleanseTagTurnOff[];
 extern const u8 gText_NettuxHealed[];
 extern const u8 gText_NettuxCantHealHere[];
 
+extern const u8 gText_MenuPC[];
+
 #endif // GUARD_STRINGS_H
