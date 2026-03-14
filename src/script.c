@@ -11,6 +11,10 @@
 #include "constants/script_commands.h"
 #include "field_message_box.h"
 
+#include "ui_birch_case.h"
+#include "task.h"
+#include "field_weather.h"
+
 #include "dexnav.h"
 
 #define RAM_SCRIPT_MAGIC 51
@@ -688,4 +692,16 @@ void SetWalkingIntoSignVars(void)
 {
     // gWalkAwayFromSignInhibitTimer = 6;
     // sMsgBoxIsCancelable = TRUE;
+}
+
+void StartNewPokeballCaseUI(void)
+{
+    FadeScreen(FADE_TO_BLACK, 0);
+    CreateTask(Task_OpenBirchCase, 0);
+}
+
+void StartNewPokeballCaseUIForBirchBattle(void)
+{
+    FadeScreen(FADE_TO_BLACK, 0);
+    CreateTask(Task_OpenBirchCaseGotoBattle, 0);
 }

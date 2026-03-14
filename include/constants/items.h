@@ -1050,6 +1050,9 @@ enum __attribute__((packed)) Item
     ITEM_BAXCALIBRITE = 871,
     ITEM_TATSUGIRINITE = 872,
     ITEM_GLIMMORANITE = 873,
+    ITEM_POCKET_JOY = 874,
+    ITEM_INFINITE_RARE_CANDY = 875,
+    ITEM_INFINITE_EXP_CANDY = 876,
 
     ITEMS_COUNT,
     ITEM_FIELD_ARROW = ITEMS_COUNT,
@@ -1115,6 +1118,7 @@ enum __attribute__((packed)) Item
 #define EXP_3000  3
 #define EXP_10000 4
 #define EXP_30000 5
+#define EXP_1000000 6
 
 // Item type IDs (used to determine the exit callback)
 enum ItemType

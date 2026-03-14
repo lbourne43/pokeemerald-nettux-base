@@ -1459,6 +1459,50 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u32 personal
         SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
 }
 
+void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature)
+{
+    u32 personality;
+
+    do
+    {
+        personality = Random32();
+    }
+    while (nature != GetNatureFromPersonality(personality));
+
+    CreateMonWithIVsPersonality(mon, species, level, fixedIV, personality);
+}
+
+void CreateMonWithGenderNatureLetter(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 gender, u8 nature, u8 unownLetter)
+{
+    u32 personality;
+
+    if ((u8)(unownLetter - 1) < NUM_UNOWN_FORMS)
+    {
+        u16 actualLetter;
+
+        do
+        {
+            personality = Random32();
+            actualLetter = GET_UNOWN_LETTER(personality);
+        }
+        while (nature != GetNatureFromPersonality(personality)
+            || gender != GetGenderFromSpeciesAndPersonality(species, personality)
+            || actualLetter != unownLetter - 1);
+    }
+    else
+    {
+        do
+        {
+            personality = Random32();
+        }
+        while (nature != GetNatureFromPersonality(personality)
+            || gender != GetGenderFromSpeciesAndPersonality(species, personality));
+    }
+
+    CreateMonWithIVsPersonality(mon, species, level, fixedIV, personality);
+}
+
+
 static bool32 IsValidGender(u32 gender)
 {
     switch (gender)
@@ -3905,6 +3949,7 @@ const u32 sExpCandyExperienceTable[] = {
     [EXP_3000 - 1] = 3000,
     [EXP_10000 - 1] = 10000,
     [EXP_30000 - 1] = 30000,
+    [EXP_1000000 - 1] = 999999,
 };
 
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
@@ -7432,3 +7477,6 @@ void ChangePokemonNicknameWithCallback(void (*callback)(void))
     GetBoxMonData(boxMon, MON_DATA_NICKNAME, gStringVar2);
     DoNamingScreen(NAMING_SCREEN_NICKNAME, gStringVar2, GetBoxMonData(boxMon, MON_DATA_SPECIES), GetBoxMonGender(boxMon), GetBoxMonData(boxMon, MON_DATA_PERSONALITY), callback);
 }
+
+
+

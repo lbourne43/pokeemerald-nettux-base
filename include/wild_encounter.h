@@ -50,6 +50,7 @@ extern bool8 gIsSurfingEncounter;
 extern u8 gChainFishingDexNavStreak;
 
 void DisableWildEncounters(bool8 disabled);
+u8 PickWildMonNature(u32 species);
 bool8 StandardWildEncounter(u16 curMetatileBehavior, u16 prevMetatileBehavior);
 bool8 SweetScentWildEncounter(void);
 bool8 DoesCurrentMapHaveFishingMons(void);

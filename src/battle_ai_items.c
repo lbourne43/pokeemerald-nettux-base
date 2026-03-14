@@ -32,6 +32,10 @@ bool32 ShouldUseItem(enum BattlerId battler)
     bool32 shouldUse = FALSE;
     u32 healAmount = 0;
 
+    // nettux no items
+    if (!IsAllowedToUseBag())
+	return FALSE;
+
     if (IsAiVsAiBattle())
         return FALSE;
 

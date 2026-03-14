@@ -47,6 +47,8 @@
 #include "constants/item_effects.h"
 #include "constants/items.h"
 #include "constants/songs.h"
+// nettux pocket joy
+#include "script_pokemon_util.h"
 
 static void SetUpItemUseCallback(u8);
 static void FieldCB_UseItemOnField(void);
@@ -1634,6 +1636,49 @@ void ItemUseOutOfBattle_TownMap(u8 taskId)
     {
         gTasks[taskId].func = ItemUseOnFieldCB_TownMap;
     }
+}
+
+void ItemUseOutOfBattle_CleanseTag(u8 taskId)
+{
+    bool8  cleanseTagOn = FlagGet(FLAG_CLEANSE_TAG);
+    if (!cleanseTagOn)
+    {
+        FlagSet(FLAG_CLEANSE_TAG);
+        PlaySE(SE_EXP_MAX);
+        if (CurrentBattlePyramidLocation() == PYRAMID_LOCATION_NONE)
+            DisplayItemMessage(taskId, FONT_NORMAL, gText_CleanseTagTurnOn, CloseItemMessage);
+        else
+            DisplayItemMessageInBattlePyramid(taskId, gText_CleanseTagTurnOn, Task_CloseBattlePyramidBagMessage);
+    }
+    else
+    {
+        FlagClear(FLAG_CLEANSE_TAG);
+        PlaySE(SE_PC_OFF);
+        if (CurrentBattlePyramidLocation() == PYRAMID_LOCATION_NONE)
+            DisplayItemMessage(taskId, FONT_NORMAL, gText_CleanseTagTurnOff, CloseItemMessage);
+        else
+            DisplayItemMessageInBattlePyramid(taskId, gText_CleanseTagTurnOff, Task_CloseBattlePyramidBagMessage);
+    }
+}
+
+void ItemUseOutOfBattle_NettuxPocketJoy(u8 taskId)
+{
+    //if (Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE) {
+	PlaySE(SE_USE_ITEM);
+        //DisplayItemMessage(taskId, FONT_NORMAL, gText_NettuxHealed, CloseItemMessage);
+	HealPlayerParty();
+        DisplayItemMessage(taskId, FONT_NORMAL, gText_NettuxHealed, CloseItemMessage);
+    //} else {
+    //    PlaySE(SE_FAILURE);
+        //DisplayItemMessage(taskId, FONT_NORMAL, gText_NettuxCantHealHere, CloseItemMessage);
+    //}
+}
+// nettux change balls
+void ItemUseOutOfBattle_PokeBall(u8 taskId)
+{
+    gItemUseCB = ItemUseCB_PokeBall;
+    gBagMenu->newScreenCallback = CB2_ShowPartyMenuForItemUse;
+    Task_FadeAndCloseBagMenu(taskId);
 }
 
 #undef tUsingRegisteredKeyItem

@@ -22,6 +22,9 @@ u32 GetCurrentLevelCap(void)
 
     u32 i;
 
+    if (FlagGet(FLAG_NETTUX_NO_CAP))
+        return MAX_LEVEL;
+
     if (B_LEVEL_CAP_TYPE == LEVEL_CAP_FLAG_LIST)
     {
         for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)

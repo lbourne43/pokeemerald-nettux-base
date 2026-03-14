@@ -50,6 +50,8 @@ extern u16 gPartnerTrainerId;
 
 #define TRAINER_BATTLE_PARAM gTrainerBattleParameter.params
 
+void CB2_GiveStarter(void);
+void CB2_GiveStarter_NewBirchUI(void);
 void BattleSetup_StartWildBattle(void);
 void BattleSetup_StartDoubleWildBattle(void);
 void BattleSetup_StartBattlePikeWildBattle(void);

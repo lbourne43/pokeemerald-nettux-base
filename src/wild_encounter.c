@@ -29,6 +29,7 @@
 #include "constants/items.h"
 #include "constants/layouts.h"
 #include "constants/weather.h"
+#include "item.h"
 
 extern const u8 EventScript_SprayWoreOff[];
 
@@ -444,7 +445,7 @@ enum TimeOfDay GetTimeOfDayForEncounters(u32 headerId, enum WildPokemonArea area
         return GenConfigTimeOfDay(timeOfDay);
 }
 
-static u8 PickWildMonNature(u32 species)
+u8 PickWildMonNature(u32 species)
 {
     u8 i;
     struct Pokeblock *safariPokeblock;
@@ -1170,8 +1171,20 @@ static void ApplyFluteEncounterRateMod(u32 *encRate)
 
 static void ApplyCleanseTagEncounterRateMod(u32 *encRate)
 {
-    if (GetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM) == ITEM_CLEANSE_TAG)
-        *encRate = *encRate * 2 / 3;
+    int i;
+    if (FlagGet(FLAG_CLEANSE_TAG)){
+        if (CheckBagHasItem(ITEM_CLEANSE_TAG, 1)){
+            *encRate = 0;
+            return;
+        }
+        FlagClear(FLAG_CLEANSE_TAG);
+    }
+    for (i = 0; i < PARTY_SIZE; i++){
+         if (GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM) == ITEM_CLEANSE_TAG){
+             *encRate = 0;
+             break;
+         }
+     }
 }
 
 bool8 TryDoDoubleWildBattle(void)

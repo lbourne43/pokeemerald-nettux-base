@@ -4,6 +4,9 @@
 #include "decompress.h"
 #include "decoration.h"
 #include "decoration_inventory.h"
+
+#include "event_data.h"
+
 #include "event_object_movement.h"
 #include "field_player_avatar.h"
 #include "field_screen_effect.h"
@@ -40,6 +43,8 @@
 #include "constants/metatile_behaviors.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+
+#include "nettux_shop.h"
 
 #define TAG_SCROLL_ARROW   2100
 #define TAG_ITEM_ICON_BASE 9110 // immune to time blending
@@ -157,6 +162,7 @@ static void Task_HandleShopMenuBuy(u8 taskId);
 static void Task_HandleShopMenuSell(u8 taskId);
 static void BuyMenuPrintItemDescriptionAndShowItemIcon(s32 item, bool8 onInit, struct ListMenu *list);
 static void BuyMenuPrintPriceInList(u8 windowId, u32 itemId, u8 y);
+static u8 GetNumberOfBadges(void);
 
 static const struct YesNoFuncTable sShopPurchaseYesNoFuncs =
 {
@@ -378,11 +384,44 @@ static void SetShopMenuCallback(void (*callback)(void))
     sMartInfo.callback = callback;
 }
 
+static u8 GetNumberOfBadges(void)
+{
+    u16 badgeFlag;
+    u8 count = 0;
+
+    for (badgeFlag = FLAG_BADGE01_GET; badgeFlag < FLAG_BADGE01_GET + NUM_BADGES; badgeFlag++)
+    {
+        if (FlagGet(badgeFlag))
+            count++;
+    }
+
+    return count;
+}
+
 static void SetShopItemsForSale(const u16 *items)
 {
     u16 i = 0;
+    u8 badgeCount = GetNumberOfBadges();
+    if (items[0] == ITEM_PREMIER_BALL) {
+        // standard mart
+        sMartInfo.itemList = sNettuxMartInventories[badgeCount];
+    } else if (items[0] == ITEM_EXP_CANDY_XS) {
+        // training mart
+        sMartInfo.itemList = sNettuxTrainingInventories[badgeCount];
+    } else if (items[0] == ITEM_EXP_SHARE) {
+        // training mart
+        sMartInfo.itemList = sNettuxBattleInventories[badgeCount];
+    } else if (items[0] == ITEM_TM_PROTECT) {
+        // training mart
+        sMartInfo.itemList = sNettuxTMInventories[badgeCount];
+    } else if (items[0] == ITEM_LINKING_CORD) {
+        // training mart
+        sMartInfo.itemList = sNettuxEvolveInventories[badgeCount];
+    } else {
+        // passed in item list directly
+        sMartInfo.itemList = items;
+    }
 
-    sMartInfo.itemList = items;
     sMartInfo.itemCount = 0;
 
     // Read items until ITEM_NONE / DECOR_NONE is reached

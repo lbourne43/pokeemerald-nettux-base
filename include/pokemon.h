@@ -734,6 +734,8 @@ void CreateMon(struct Pokemon *mon, u16 species, u8 level, u32 personality, stru
 void CreateRandomMon(struct Pokemon *mon, u16 species, u8 level);
 void CreateRandomMonWithIVs(struct Pokemon *mon, u16 species, u8 level, u8 fixedIv);
 void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u32 personality, struct OriginalTrainerId);
+void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature);
+void CreateMonWithGenderNatureLetter(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 gender, u8 nature, u8 unownLetter);
 void CreateMonWithIVs(struct Pokemon *mon, u16 species, u8 level, u32 personality, struct OriginalTrainerId trainerId, u8 fixedIV);
 void SetBoxMonIVs(struct BoxPokemon *mon, u8 fixedIV);
 void CreateMaleMon(struct Pokemon *mon, u16 species, u8 level);
@@ -941,5 +943,8 @@ bool32 IsSpeciesOfType(u32 species, enum Type type);
 struct BoxPokemon *GetSelectedBoxMonFromPcOrParty(void);
 u32 GiveScriptedMonToPlayer(struct Pokemon *mon, u8 slot);
 void ChangePokemonNicknameWithCallback(void (*callback)(void));
+
+u32 GetFormChangeTargetSpecies(struct Pokemon *mon, enum FormChanges method);
+u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges method);
 
 #endif // GUARD_POKEMON_H
