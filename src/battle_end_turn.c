@@ -178,20 +178,20 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
                         DebugPrintf("Magma Storm");
 		                  	if (magma_mult == UQ_4_12(2.0)) {
                             DebugPrintf("Fire super effective");
-                            gBattleStruct->moveDamage[battler] = 1 * max(1, GetNonDynamaxMaxHP(battler) / 4);
+                            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 4);
 	                  		} else if (magma_mult == UQ_4_12(4.0)) {
                             DebugPrintf("Fire 2x super effective");
-                            gBattleStruct->moveDamage[battler] = 1 * max(1, GetNonDynamaxMaxHP(battler) / 2);
+                            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 2);
 		                  	} else {
-                            gBattleStruct->moveDamage[battler] = 1 * max(1, GetNonDynamaxMaxHP(battler) / 8);
+                            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 8);
 			                  }
                         if (gBattleStruct->moveDamage[battler] == 0)
                             gBattleStruct->moveDamage[battler] = 1;
-			                  DebugPrintf("Magma damage %d", gBattleStruct->moveDamage[battler]);
                         PREPARE_MOVE_BUFFER(gBattleTextBuff1, MOVE_MAGMA_STORM);
                         gBattlerTarget = battler;
                         gBattleScripting.animArg1 = gBattlerTarget;
                         BattleScriptExecute(BattleScript_MagmaTurnDmg);
+                        //BattleScriptExecute(BattleScript_DamagingWeather);
 			                  BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_HP_BATTLE, 0, sizeof(gBattleMons[battler].hp), &gBattleMons[battler].hp);
 		                } else if (CanBeBurned(gBattlerTarget, gBattlerAttacker, GetBattlerAbility(gBattlerAttacker))) {
                         // HEAT_WAVE

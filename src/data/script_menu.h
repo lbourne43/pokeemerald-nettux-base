@@ -74,8 +74,8 @@ static const struct MenuAction sMultichoiceList_NettuxStatus[] =
 {
     {gText_NettuxStatusBurn},
     {gText_NettuxStatusFreeze},
-    {gText_NettuxStatusSleep},
     {gText_NettuxStatusParalysis},
+    {gText_NettuxStatusSleep},
     {gText_NettuxStatusPoison},
     {gText_NettuxStatusToxic},
 };
@@ -1355,6 +1355,13 @@ static const struct MultichoiceListStruct sMultichoiceLists[] =
     [MULTI_HOF_VICTORIES_QUIT]                         = MULTICHOICE(sMultichoiceList_HOF_Victories_Quit),
     [MULTI_EGGS_VICTORIES_QUIT]                        = MULTICHOICE(sMultichoiceList_Eggs_Victories_Quit),
     [MULTI_HOF_EGGS_VICTORIES_QUIT]                    = MULTICHOICE(sMultichoiceList_HOF_Eggs_Victories_Quit),
+    [MULTICHOICE_NETTUX_MART_HELPER]   = MULTICHOICE(sMultichoiceList_NettuxMartHelper),
+    [MULTICHOICE_NETTUX_HYPER_TRAINER] = MULTICHOICE(sMultichoiceList_NettuxHyperTrainer),
+    [MULTICHOICE_NETTUX_DIFFICULTY]    = MULTICHOICE(sMultichoiceList_NettuxDifficulty),
+    [MULTICHOICE_NETTUX_TERA_TRAINER]  = MULTICHOICE(sMultichoiceList_NettuxTeraTrainer),
+    [MULTICHOICE_NETTUX_RENATURE]      = MULTICHOICE(sMultichoiceList_NettuxReNature),
+    [MULTICHOICE_NETTUX_STATUS]        = MULTICHOICE(sMultichoiceList_NettuxStatus),
+    [MULTICHOICE_NETTUX_HEAL_OR_STATUS]= MULTICHOICE(sMultichoiceList_NettuxHealOrStatus),
 };
 
 const u8 *const gStdStrings[] =

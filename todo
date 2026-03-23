@@ -5,22 +5,17 @@ add scripts to toggle:
 - reusable tms
 
 difficulty option
-box link
-blackout weather
-blackout move
-acid rain weather
-acid rain move
-hurricane weather
-heat wave weather
-
-hypertraining scripts
-tera type change scripts
-nature change scripts
-status inflict at poke centre
 a bunch of tms
 
+to test:
+hurricane weather
+acid rain move - still plays anim when failing
+blackout move - still plays anim when failing
+box link - should switch to pokenav, menu overflows
 
 implemented:
+magma storm weather
+heat wave weather
 remove trade evos
 hms don't need to be taught (just badge and HM in bag)
 hms can be deleted
@@ -40,3 +35,9 @@ cleanse tag
 no affection events in battle
 balls can be changed after catching
 re-add ruby and sapphire version exclusives
+hypertraining scripts
+tera type change scripts
+nature change scripts
+status inflict at poke centre
+blackout weather
+acid rain weather
