@@ -7,13 +7,15 @@ add scripts to toggle:
 difficulty option
 a bunch of tms
 
+permanent trick room
+
 to test:
 hurricane weather
 acid rain move - still plays anim when failing
 blackout move - still plays anim when failing
-box link - should switch to pokenav, menu overflows
 
 implemented:
+box link - accessable via pokenav, FLAG_POKEMONPCMENU also adds it to start menu
 magma storm weather
 heat wave weather
 remove trade evos

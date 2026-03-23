@@ -80,6 +80,8 @@ extern u8 gDisableMapMusicChangeOnMapLoad;
 
 extern struct TimeBlendSettings gTimeBlend;
 
+extern bool8 gSysPcFromPokenav;
+
 extern const struct UCoords32 gDirectionToVectors[];
 
 void DoWhiteOut(void);

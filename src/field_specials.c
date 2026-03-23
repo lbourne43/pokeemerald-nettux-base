@@ -1106,6 +1106,9 @@ static void PCTurnOnEffect(struct Task *task)
 
         // Get where the PC should be, depending on where the player is looking.
         playerDirection = GetPlayerFacingDirection();
+        if (gSysPcFromPokenav) {
+            return;
+        }
         switch (playerDirection)
         {
         case DIR_NORTH:
@@ -1184,6 +1187,10 @@ static void PCTurnOffEffect(void)
 
     if (IsPlayerInFrontOfPC() == FALSE)
         return;
+    if(gSysPcFromPokenav){
+         gSysPcFromPokenav = FALSE;
+         return;
+    }
     switch (playerDirection)
     {
     case DIR_NORTH:
