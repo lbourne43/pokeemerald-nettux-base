@@ -8251,3 +8251,12 @@ BattleScript_SilphScopeUnveiled::
 	printstring STRINGID_GHOSTWASMAROWAK
 	waitmessage B_WAIT_TIME_LONG
 	end2
+
+BattleScript_MagmaTurnDmg::
+	copybyte gBattlerAttacker, gBattlerTarget
+        playanimation BS_TARGET, B_ANIM_SEA_OF_FIRE
+        waitanimation
+        call BattleScript_HurtAttacker
+        waitmessage B_WAIT_TIME_LONG
+        tryfaintmon BS_TARGET
+        end2

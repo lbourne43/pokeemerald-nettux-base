@@ -221,6 +221,23 @@ static const struct BattleWeatherInfo sBattleWeatherInfo[BATTLE_WEATHER_COUNT] =
         .continuesMessage = B_MSG_WEATHER_TURN_STRONG_WINDS,
         .animation = B_ANIM_STRONG_WINDS,
     },
+    [BATTLE_WEATHER_NETTUX_ACID_RAIN] =
+    {
+        .flag = B_WEATHER_NETTUX_ACID_RAIN,
+        .rock = HOLD_EFFECT_NONE,
+        .endMessage = B_MSG_WEATHER_END_NETTUX_ACID_RAIN,
+        .continuesMessage = B_MSG_WEATHER_TURN_NETTUX_ACID_RAIN,
+        .animation = B_ANIM_RAIN_CONTINUES,
+    },
+
+    [BATTLE_WEATHER_NETTUX_BLACKOUT] =
+    {
+        .flag = B_WEATHER_NETTUX_BLACKOUT,
+        .rock = HOLD_EFFECT_NONE,
+        .endMessage = B_MSG_WEATHER_END_NETTUX_BLACKOUT,
+        .continuesMessage = B_MSG_WEATHER_TURN_NETTUX_BLACKOUT,
+        .animation = B_ANIM_BLACKOUT_CONTINUES,
+    },
 };
 
 u32 GetCurrentBattleWeather(void)
@@ -249,6 +266,51 @@ bool32 EndOrContinueWeather(void)
     if (gBattleStruct->weatherDuration > 0 && --gBattleStruct->weatherDuration == 0)
     {
         gBattleWeather = B_WEATHER_NONE;
+
+
+if (FlagGet(FLAG_TEMP_NETTUX_PERMA_WEATHER)) {
+	    switch (GetSavedWeather()) {
+		case WEATHER_RAIN:
+		case WEATHER_RAIN_THUNDERSTORM:
+		case WEATHER_NETTUX_HURRICANE:
+                    gBattleWeather = B_WEATHER_RAIN_NORMAL;
+	            break;
+		case WEATHER_NETTUX_HEAT_WAVE:
+		case WEATHER_NETTUX_MAGMA_STORM:
+		case WEATHER_DROUGHT:
+                    gBattleWeather = B_WEATHER_SUN_NORMAL;
+	            break;
+		case WEATHER_SANDSTORM:
+                    gBattleWeather = B_WEATHER_SANDSTORM;
+	            break;
+		case WEATHER_SNOW:
+                    gBattleWeather = B_WEATHER_SNOW;
+	            break;
+		case WEATHER_NETTUX_ACID_RAIN:
+                    gBattleWeather = B_WEATHER_NETTUX_ACID_RAIN;
+	            DebugPrintf("revert acid rain");
+	            break;
+		case WEATHER_NETTUX_BLACKOUT:
+                    gBattleWeather = B_WEATHER_NETTUX_BLACKOUT;
+	            DebugPrintf("revert blackout");
+	            break;
+		case WEATHER_NETTUX_STRONG_WINDS:
+                    gBattleWeather = B_WEATHER_STRONG_WINDS;
+	            DebugPrintf("revert strong winds");
+	            break;
+		case WEATHER_NETTUX_PRIMAL_RAIN:
+                    gBattleWeather = B_WEATHER_RAIN_PRIMAL;
+	            DebugPrintf("revert primal rain");
+	            break;
+		case WEATHER_NETTUX_PRIMAL_SUN:
+                    gBattleWeather = B_WEATHER_SUN_PRIMAL;
+	            DebugPrintf("revert primal sun");
+	            break;
+	    }
+
+        }
+
+
         for (enum BattlerId battler = 0; battler < gBattlersCount; battler++)
         {
             gBattleMons[battler].volatiles.weatherAbilityDone = FALSE;
@@ -2109,6 +2171,11 @@ bool32 TryChangeBattleWeather(enum BattlerId battler, u32 battleWeatherId, enum 
     {
         return FALSE;
     }
+    // nettux check if weather is permanent and return FALSE to block the change
+    else if (FlagGet(FLAG_TEMP_NETTUX_PERMA_WEATHER) && FlagGet(FLAG_TEMP_NETTUX_IMMUTABLE_WEATHER))
+    {
+        return FALSE;
+    }
 
     if (GetConfig(B_ABILITY_WEATHER) < GEN_6 && ability != ABILITY_NONE)
     {
@@ -2148,6 +2215,10 @@ bool32 TryChangeBattleWeather(enum BattlerId battler, u32 battleWeatherId, enum 
 
 bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
 {
+    if (FlagGet(FLAG_TEMP_NETTUX_PERMA_TERRAIN))
+    {
+        return FALSE;
+    }
     if (gBattleStruct->isSkyBattle)
         return FALSE;
 
@@ -2979,6 +3050,34 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
         {
             switch (GetCurrentWeather())
             {
+  	        case WEATHER_NETTUX_BLACKOUT:
+                if (!(gBattleWeather & B_WEATHER_NETTUX_BLACKOUT))
+                {
+                    DebugPrintf("blackout");
+                    gBattleWeather = B_WEATHER_NETTUX_BLACKOUT;
+                    gBattleScripting.animArg1 = B_ANIM_BLACKOUT_CONTINUES;
+                    effect = TRUE;
+                }
+                break;
+	          case WEATHER_NETTUX_ACID_RAIN:
+                if (!(gBattleWeather & B_WEATHER_NETTUX_ACID_RAIN))
+                {
+                    DebugPrintf("Acid Rain");
+                    gBattleWeather = B_WEATHER_NETTUX_ACID_RAIN;
+                    gBattleScripting.animArg1 = B_ANIM_RAIN_CONTINUES;
+                    effect = TRUE;
+                }
+                break;
+	          case WEATHER_NETTUX_STRONG_WINDS:
+                if (!(gBattleWeather & B_WEATHER_STRONG_WINDS))
+                {
+                    DebugPrintf("Strong Winds");
+                    gBattleWeather = B_WEATHER_STRONG_WINDS;
+                    gBattleScripting.animArg1 = B_ANIM_STRONG_WINDS;
+                    effect = TRUE;
+                }
+                break;
+      	    case WEATHER_NETTUX_HURRICANE:
             case WEATHER_RAIN:
             case WEATHER_RAIN_THUNDERSTORM:
             case WEATHER_DOWNPOUR:
@@ -2997,10 +3096,21 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
                     effect = TRUE;
                 }
                 break;
+            case WEATHER_NETTUX_MAGMA_STORM:
+            case WEATHER_NETTUX_HEAT_WAVE:
             case WEATHER_DROUGHT:
                 if (!(gBattleWeather & B_WEATHER_SUN))
                 {
                     gBattleWeather = B_WEATHER_SUN_NORMAL;
+                    gBattleScripting.animArg1 = B_ANIM_SUN_CONTINUES;
+                    effect = TRUE;
+                }
+                break;
+            case WEATHER_NETTUX_PRIMAL_SUN:
+                if (!(gBattleWeather & B_WEATHER_SUN_PRIMAL))
+                {
+                    DebugPrintf("Primal Sun");
+                    gBattleWeather = B_WEATHER_SUN_PRIMAL;
                     gBattleScripting.animArg1 = B_ANIM_SUN_CONTINUES;
                     effect = TRUE;
                 }
@@ -6535,6 +6645,22 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct BattleContext *ctx)
     uq4_12_t modifier = UQ_4_12(1.0);
     u32 atkSide = GetBattlerSide(battlerAtk);
 
+    // nettux acid rain
+    if (moveType == TYPE_POISON && IsBattlerWeatherAffected(battlerAtk, B_WEATHER_NETTUX_ACID_RAIN)) {
+        // acid rain poison buff
+	modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
+    } else if ((moveType == TYPE_DARK || moveType == TYPE_GHOST) && IsBattlerWeatherAffected(battlerAtk, B_WEATHER_NETTUX_BLACKOUT)) {
+        // nettux blackout dark and ghost buff
+	modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
+    } else if (moveType == TYPE_FIGHTING && IsBattlerWeatherAffected(battlerAtk, B_WEATHER_NETTUX_BLACKOUT)) {
+        // nettux blackout fighting nerf
+	modifier = uq4_12_multiply(modifier, UQ_4_12(0.5));
+    //} else if (moveType == TYPE_PSYCHIC && IsBattlerWeatherAffected(battlerAtk, B_WEATHER_NETTUX_ACID_RAIN)) {
+        // nettux acid_rain psychic nerf
+	//modifier = uq4_12_multiply(modifier, UQ_4_12(0.5));
+    }
+
+
     // move effect
     switch (moveEffect)
     {
@@ -8215,6 +8341,18 @@ static inline void MulByTypeEffectiveness(struct BattleContext *ctx, uq4_12_t *m
         mod = UQ_4_12(1.0);
         if (ctx->updateFlags)
             RecordAbilityBattle(ctx->battlerAtk, ctx->abilityAtk);
+    }
+    else if (ctx->moveType == TYPE_GHOST && defType == TYPE_NORMAL && mod == UQ_4_12(0.0) && gBattleWeather == B_WEATHER_NETTUX_BLACKOUT)
+    {
+        mod = UQ_4_12(2.0);
+    }
+    else if (ctx->moveType == TYPE_DARK && defType == TYPE_GHOST && mod == UQ_4_12(2.0) && gBattleWeather == B_WEATHER_NETTUX_BLACKOUT)
+    {
+        mod = UQ_4_12(0.5);
+    }
+    else if (ctx->moveType == TYPE_POISON && defType == TYPE_STEEL && mod == UQ_4_12(0.0) && gBattleWeather == B_WEATHER_NETTUX_ACID_RAIN)
+    {
+        mod = UQ_4_12(1.0);
     }
 
     if (ctx->moveType == TYPE_PSYCHIC && defType == TYPE_DARK && gBattleMons[ctx->battlerDef].volatiles.miracleEye && mod == UQ_4_12(0.0))

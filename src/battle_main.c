@@ -4744,10 +4744,31 @@ void SwapTurnOrder(u8 id1, u8 id2)
 u32 GetBattlerTotalSpeedStat(enum BattlerId battler, enum Ability ability, enum HoldEffect holdEffect)
 {
     u32 speed = gBattleMons[battler].speed;
+    u32 weather = GetSavedWeather();
+    u32 type1 = gBattleMons[battler].types[0];
+    u32 type2 = gBattleMons[battler].types[1];
+
+    bool32 isTera = GetActiveGimmick(battler) == GIMMICK_TERA;
+    u32 teraType = GetBattlerTeraType(battler);
 
     // stat stages
     speed *= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED]][0];
     speed /= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED]][1];
+
+    if (weather == WEATHER_NETTUX_HURRICANE && (gBattleWeather & B_WEATHER_RAIN || gBattleWeather == B_WEATHER_NONE)) {
+	if (isTera) {
+	    if (teraType == TYPE_WATER || teraType == TYPE_FLYING) {
+                speed *= 2;
+	        //DebugPrintf("Tera speed increased due to hurricane");
+	    }
+	} else if (type1 == TYPE_WATER
+	        || type2 == TYPE_WATER 
+	        || type1 == TYPE_FLYING 
+	        || type2 == TYPE_FLYING) {
+            speed *= 2;
+            //DebugPrintf("Non-Tera speed increased due to hurricane");
+	}
+    }
 
     // weather abilities
     if (HasWeatherEffect())
@@ -5909,6 +5930,10 @@ enum Type GetDynamicMoveType(struct Pokemon *mon, enum Move move, enum BattlerId
                     return TYPE_FIRE;
                 else if (gBattleWeather & B_WEATHER_ICY_ANY)
                     return TYPE_ICE;
+                else if (gBattleWeather & B_WEATHER_NETTUX_ACID_RAIN && holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA)
+                    return TYPE_POISON;
+                else if (gBattleWeather & B_WEATHER_NETTUX_BLACKOUT && holdEffect != HOLD_EFFECT_LIGHT_BALL)
+                    return TYPE_DARK;
                 else
                     return moveType;
             }
@@ -5918,12 +5943,15 @@ enum Type GetDynamicMoveType(struct Pokemon *mon, enum Move move, enum BattlerId
             switch (gWeatherPtr->currWeather)
             {
             case WEATHER_DROUGHT:
+            case WEATHER_NETTUX_HEAT_WAVE:
+            case WEATHER_NETTUX_MAGMA_STORM:
                 if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA)
                     return TYPE_FIRE;
                 break;
             case WEATHER_RAIN:
             case WEATHER_RAIN_THUNDERSTORM:
             case WEATHER_DOWNPOUR:
+            case WEATHER_NETTUX_HURRICANE:
                 if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA)
                     return TYPE_WATER;
                 break;
@@ -5931,6 +5959,14 @@ enum Type GetDynamicMoveType(struct Pokemon *mon, enum Move move, enum BattlerId
                 return TYPE_ICE;
             case WEATHER_SANDSTORM:
                 return TYPE_ROCK;
+            case WEATHER_NETTUX_ACID_RAIN:
+                if (holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA)
+                    return TYPE_POISON;
+                break;
+            case WEATHER_NETTUX_BLACKOUT:
+                if (holdEffect != HOLD_EFFECT_LIGHT_BALL)
+                    return TYPE_DARK;
+                break;
             }
             return moveType;
         }

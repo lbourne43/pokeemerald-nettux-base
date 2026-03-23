@@ -13,6 +13,9 @@
 #include "constants/items.h"
 #include "constants/moves.h"
 
+#include "field_weather.h"
+#include "constants/weather.h"
+
 static u32 GetBattlerSideForMessage(enum BattleSide side)
 {
     enum BattlerId battler = 0;
@@ -95,6 +98,8 @@ static bool32 HandleEndTurnWeather(enum BattlerId battler)
 static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
 {
     bool32 effect = FALSE;
+    uq4_12_t magma_mult;
+    struct BattleContext magma_ctx = {0};
 
     enum Ability ability = GetBattlerAbility(battler);
     u32 currBattleWeather = GetCurrentBattleWeather();
@@ -133,7 +138,75 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
         {
             if (AbilityBattleEffects(ABILITYEFFECT_ENDTURN, battler, ability, MOVE_NONE, TRUE))
                 effect = TRUE;
-        }
+        } else if ((GetSavedWeather() == WEATHER_NETTUX_HEAT_WAVE || GetSavedWeather() == WEATHER_NETTUX_MAGMA_STORM)
+                  && ability != ABILITY_THERMAL_EXCHANGE
+                  && ability != ABILITY_FLASH_FIRE
+                  && ability != ABILITY_PROTOSYNTHESIS
+                  && ability != ABILITY_DROUGHT
+                  && ability != ABILITY_ORICHALCUM_PULSE
+                  && ability != ABILITY_SOLAR_POWER
+                  && ability != ABILITY_CHLOROPHYLL
+                  && ability != ABILITY_FLOWER_GIFT
+                  && ability != ABILITY_LEAF_GUARD
+                  && ability != ABILITY_FLAME_BODY
+                  && ability != ABILITY_WATER_VEIL
+                  && ability != ABILITY_WATER_BUBBLE
+                  && ability != ABILITY_THICK_FAT
+                  && !IS_BATTLER_ANY_TYPE(gBattlerAttacker, TYPE_ROCK, TYPE_FIRE, TYPE_DRAGON, TYPE_WATER)
+                               && gBattleMons[battler].volatiles.semiInvulnerable != STATE_UNDERGROUND
+             && gBattleMons[battler].volatiles.semiInvulnerable != STATE_UNDERWATER
+                  && GetBattlerHoldEffect(battler) != HOLD_EFFECT_UTILITY_UMBRELLA) {
+
+                gBattleScripting.battler = battler;
+
+
+
+                            magma_ctx.battlerAtk = battler;
+                            magma_ctx.battlerDef = battler;
+                            magma_ctx.move = magma_ctx.chosenMove = MOVE_FLAMETHROWER;
+                            magma_ctx.moveType = TYPE_FIRE;
+                            magma_ctx.isAnticipation = TRUE;
+
+
+		                  magma_mult = CalcTypeEffectivenessMultiplier(&magma_ctx);
+
+                if (magma_mult >= UQ_4_12(1.0)) {
+		    // magma storm damage 1/8 * weakness to fire
+                    DebugPrintf("Fire effective");
+             		    if (GetSavedWeather() == WEATHER_NETTUX_MAGMA_STORM) {
+                        // MAGMA_STORM
+                        DebugPrintf("Magma Storm");
+		                  	if (magma_mult == UQ_4_12(2.0)) {
+                            DebugPrintf("Fire super effective");
+                            gBattleStruct->moveDamage[battler] = 1 * max(1, GetNonDynamaxMaxHP(battler) / 4);
+	                  		} else if (magma_mult == UQ_4_12(4.0)) {
+                            DebugPrintf("Fire 2x super effective");
+                            gBattleStruct->moveDamage[battler] = 1 * max(1, GetNonDynamaxMaxHP(battler) / 2);
+		                  	} else {
+                            gBattleStruct->moveDamage[battler] = 1 * max(1, GetNonDynamaxMaxHP(battler) / 8);
+			                  }
+                        if (gBattleStruct->moveDamage[battler] == 0)
+                            gBattleStruct->moveDamage[battler] = 1;
+			                  DebugPrintf("Magma damage %d", gBattleStruct->moveDamage[battler]);
+                        PREPARE_MOVE_BUFFER(gBattleTextBuff1, MOVE_MAGMA_STORM);
+                        gBattlerTarget = battler;
+                        gBattleScripting.animArg1 = gBattlerTarget;
+                        BattleScriptExecute(BattleScript_MagmaTurnDmg);
+			                  BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_HP_BATTLE, 0, sizeof(gBattleMons[battler].hp), &gBattleMons[battler].hp);
+		                } else if (CanBeBurned(gBattlerTarget, gBattlerAttacker, GetBattlerAbility(gBattlerAttacker))) {
+                        // HEAT_WAVE
+		                    // set burn
+                        DebugPrintf("Heat Wave");
+		                    gBattleMons[battler].status1 = STATUS1_BURN;
+                        BattleScriptExecute(BattleScript_FlameOrb);
+                        RecordItemEffectBattle(battler, HOLD_EFFECT_FLAME_ORB);
+
+                        BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0, 4, &gBattleMons[battler].status1);
+		                }
+                    MarkBattlerForControllerExec(battler);
+                }
+		        effect = TRUE;
+            }
         break;
     case BATTLE_WEATHER_SANDSTORM:
         if (ability != ABILITY_SAND_VEIL
@@ -176,8 +249,25 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
             }
         }
         break;
-    }
+    case BATTLE_WEATHER_NETTUX_ACID_RAIN:
+        if (!IS_BATTLER_ANY_TYPE(gBattlerAttacker, TYPE_STEEL, TYPE_POISON)
+             && gBattleMons[battler].volatiles.semiInvulnerable != STATE_UNDERGROUND
+             && gBattleMons[battler].volatiles.semiInvulnerable != STATE_UNDERWATER
+		         && CanBePoisoned(battler, battler, GetBattlerAbility(battler), GetBattlerAbility(battler))
+             && GetBattlerHoldEffect(battler) != HOLD_EFFECT_UTILITY_UMBRELLA) {
+             DebugPrintf("Acid Rain effects");
+	
+             gBattleScripting.battler = battler;
+		         gBattleMons[battler].status1 = STATUS1_TOXIC_POISON;
+             BattleScriptExecute(BattleScript_ToxicOrb);
+             RecordItemEffectBattle(battler, HOLD_EFFECT_TOXIC_ORB);
 
+             BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0, 4, &gBattleMons[battler].status1);
+             MarkBattlerForControllerExec(battler);
+		         effect = TRUE;
+        }
+        break;
+    }
     return effect;
 }
 

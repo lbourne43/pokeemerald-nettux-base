@@ -141,6 +141,14 @@ static const struct WeatherCallbacks sWeatherFuncs[] =
     [WEATHER_DROUGHT]            = {Drought_InitVars,       Drought_Main,       Drought_InitAll,       Drought_Finish},
     [WEATHER_DOWNPOUR]           = {Downpour_InitVars,      Thunderstorm_Main,  Downpour_InitAll,      Thunderstorm_Finish},
     [WEATHER_UNDERWATER_BUBBLES] = {Bubbles_InitVars,       Bubbles_Main,       Bubbles_InitAll,       Bubbles_Finish},
+    [WEATHER_NETTUX_HURRICANE]   = {nettuxHurricane_InitVars,nettuxHurricane_Main,nettuxHurricane_InitAll,nettuxHurricane_Finish},
+    [WEATHER_NETTUX_HEAT_WAVE]   = {nettuxHeatWave_InitVars,nettuxHeatWave_Main,nettuxHeatWave_InitAll,nettuxHeatWave_Finish},
+    [WEATHER_NETTUX_MAGMA_STORM] = {nettuxMagmaStorm_InitVars,nettuxMagmaStorm_Main,nettuxMagmaStorm_InitAll,nettuxMagmaStorm_Finish},
+    [WEATHER_NETTUX_ACID_RAIN] = {nettuxAcidRain_InitVars,nettuxAcidRain_Main,nettuxAcidRain_InitAll,nettuxAcidRain_Finish},
+    [WEATHER_NETTUX_BLACKOUT] = {nettuxBlackout_InitVars,nettuxBlackout_Main,nettuxBlackout_InitAll,nettuxBlackout_Finish},
+    [WEATHER_NETTUX_STRONG_WINDS] = {Sunny_InitVars,         Sunny_Main,         Sunny_InitAll,         Sunny_Finish},
+    [WEATHER_NETTUX_PRIMAL_SUN] = {Drought_InitVars,         Drought_Main,         Drought_InitAll,         Drought_Finish},
+    [WEATHER_NETTUX_PRIMAL_RAIN] = {nettuxPrimalRain_InitVars,nettuxPrimalRain_Main,nettuxPrimalRain_InitAll,nettuxPrimalRain_Finish},
 };
 
 void (*const gWeatherPalStateFuncs[])(void) =

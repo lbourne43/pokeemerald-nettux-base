@@ -36,6 +36,8 @@ static enum FieldEffectOutcome BenefitsFromSun(enum BattlerId battler);
 static enum FieldEffectOutcome BenefitsFromSandstorm(enum BattlerId battler);
 static enum FieldEffectOutcome BenefitsFromHailOrSnow(enum BattlerId battler, u32 weather);
 static enum FieldEffectOutcome BenefitsFromRain(enum BattlerId battler);
+static enum FieldEffectOutcome BenefitsFromAcidRain(enum BattlerId battler);
+static enum FieldEffectOutcome BenefitsFromBlackout(enum BattlerId battler);
 // The following functions all feed into FieldStatusChecker, which is then called by ShouldSetFieldStatus and ShouldClearFieldStatus.
 // They work approximately the same as the weather functions.
 static enum FieldEffectOutcome BenefitsFromElectricTerrain(enum BattlerId battler);
@@ -85,6 +87,10 @@ bool32 WeatherChecker(enum BattlerId battler, u32 weather, enum FieldEffectOutco
             result = BenefitsFromSandstorm(battler);
         else if (weather & B_WEATHER_ICY_ANY)
             result = BenefitsFromHailOrSnow(battler, weather);
+        else if (weather & B_WEATHER_NETTUX_ACID_RAIN)
+            result = BenefitsFromAcidRain(battler);
+        else if (weather & B_WEATHER_NETTUX_BLACKOUT)
+            result = BenefitsFromBlackout(battler);
 
         battler = BATTLE_PARTNER(battler);
 
@@ -314,6 +320,29 @@ static enum FieldEffectOutcome BenefitsFromRain(enum BattlerId battler)
 
     return FIELD_EFFECT_NEUTRAL;
 }
+
+static enum FieldEffectOutcome BenefitsFromAcidRain(enum BattlerId battler)
+{
+    if (IS_BATTLER_ANY_TYPE(battler, TYPE_POISON, TYPE_STEEL))
+        return FIELD_EFFECT_POSITIVE;
+
+    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_UTILITY_UMBRELLA)
+        return FIELD_EFFECT_NEUTRAL;
+
+    return FIELD_EFFECT_NEGATIVE;
+}
+
+static enum FieldEffectOutcome BenefitsFromBlackout(enum BattlerId battler)
+{
+    if (IS_BATTLER_ANY_TYPE(battler, TYPE_GHOST, TYPE_DARK))
+        return FIELD_EFFECT_POSITIVE;
+
+    if (gAiLogicData->holdEffects[battler] == HOLD_EFFECT_LIGHT_BALL)
+        return FIELD_EFFECT_NEUTRAL;
+
+    return FIELD_EFFECT_NEGATIVE;
+}
+
 
 //TODO: when is electric terrain bad?
 static enum FieldEffectOutcome BenefitsFromElectricTerrain(enum BattlerId battler)
