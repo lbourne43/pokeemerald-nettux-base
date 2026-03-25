@@ -51,7 +51,53 @@
     F(STEEL_WING) \
     F(SKILL_SWAP) \
     F(SNATCH) \
-    F(OVERHEAT)
+    F(OVERHEAT) \
+    F(TAILWIND) \
+    F(TRICK_ROOM) \
+    F(FAKE_OUT) \
+    F(HIGH_HORSEPOWER) \
+    F(AIR_SLASH) \
+    F(ENERGY_BALL) \
+    F(HEAVY_SLAM) \
+    F(ELECTROWEB) \
+    F(VOLT_SWITCH) \
+    F(WILL_O_WISP) \
+    F(ROCK_SLIDE) \
+    F(DRAIN_PUNCH) \
+    F(FIRE_PUNCH) \
+    F(ICE_PUNCH) \
+    F(THUNDER_PUNCH) \
+    F(POLLEN_PUFF) \
+    F(U_TURN) \
+    F(SNOWSCAPE) \
+    F(WEATHER_BALL) \
+    F(FLIP_TURN) \
+    F(PARTING_SHOT) \
+    F(BATON_PASS) \
+    F(POISON_JAB) \
+    F(MACH_PUNCH) \
+    F(BULLET_PUNCH) \
+    F(PSYCHIC_FANGS) \
+    F(POISON_FANG) \
+    F(FIRE_FANG) \
+    F(ICE_FANG) \
+    F(THUNDER_FANG) \
+    F(CRUNCH) \
+    F(SWIFT) \
+    F(SHADOW_PUNCH) \
+    F(SMART_STRIKE) \
+    F(AURA_SPHERE) \
+    F(MAGICAL_LEAF) \
+    F(FEINT_ATTACK) \
+    F(LEAF_BLADE) \
+    F(PSYCHO_CUT) \
+    F(FLARE_BLITZ) \
+    F(BRAVE_BIRD) \
+    F(WILD_CHARGE) \
+    F(CLOSE_COMBAT) \
+    F(WAVE_CRASH) \
+    F(WOOD_HAMMER) \
+    F(DOUBLE_EDGE) 
 
 #define FOREACH_HM(F) \
     F(CUT) \
