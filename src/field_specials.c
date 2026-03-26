@@ -80,6 +80,8 @@
 #include "naming_screen.h"
 #include "chooseboxmon.h"
 
+#include "wild_encounter.h"
+
 #define TAG_ITEM_ICON 5500
 
 #define GFXTAG_MULTICHOICE_SCROLL_ARROWS 2000
@@ -6138,4 +6140,20 @@ void nettuxSetPermanentSnow(void)
     SetSavedWeather(WEATHER_SNOW);
     FlagSet(FLAG_TEMP_NETTUX_PERMA_WEATHER);
     FlagSet(FLAG_TEMP_NETTUX_IMMUTABLE_WEATHER);
+}
+
+void nettuxGetRandomWildMon(void)
+{
+    u32 headerId;
+    enum TimeOfDay timeOfDay;
+    const struct WildPokemon *encounters;
+    headerId = GetCurrentMapWildMonHeaderId();
+    timeOfDay = GetTimeOfDayForEncounters(headerId, WILD_AREA_LAND);
+    encounters = gWildMonHeaders[headerId].encounterTypes[timeOfDay].landMonsInfo->wildPokemon;
+
+    int index = Random() % 8;
+
+    const struct WildPokemon *mon = &encounters[index];
+    DebugPrintf("%d", mon->species);
+    VarSet(VAR_NETTUX_ENCOUNTER, mon->species);
 }

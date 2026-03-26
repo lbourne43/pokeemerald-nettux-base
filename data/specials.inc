@@ -689,3 +689,4 @@ gSpecials::
         def_special SetNatureTimid
         def_special nettuxSetPermanentTrickRoom
         def_special nettuxSetPermanentTailwindOpponent
+        def_special nettuxGetRandomWildMon

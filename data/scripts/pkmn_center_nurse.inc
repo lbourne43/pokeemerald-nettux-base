@@ -1205,19 +1205,88 @@ NettuxPure_SetNatureTimid::
         faceplayer
         removeitem ITEM_HEART_SCALE
         special SetNatureTimid
-	msgbox NettuxHelper_Text_NatureChanged 4
-	playse SE_SHOP
+	      msgbox NettuxHelper_Text_NatureChanged 4
+	      playse SE_SHOP
         msgbox NettuxPure_Text_HandedOverHeartScale, MSGBOX_DEFAULT
         msgbox NettuxPure_Text_HandedOverHeartScale, MSGBOX_DEFAULT
         closemessage
         releaseall
         end
 
+Nettux_RandomWildMon::
+        special nettuxGetRandomWildMon
+        showmonpic VAR_NETTUX_ENCOUNTER, 10, 3
+        msgbox Nettux_Text_DoYouWantThisPokemon, MSGBOX_YESNO
+        hidemonpic
+	      goto_if_eq VAR_RESULT, YES, Nettux_GiveRandomWildMon
+	      goto_if_eq VAR_RESULT, NO, Nettux_RerollRandomWildMon
+        end
+
+Nettux_RerollRandomWildMon::
+        msgbox Nettux_Text_WantAnotherPokemon, MSGBOX_YESNO
+	      goto_if_eq VAR_RESULT, YES, Nettux_RandomWildMon
+        msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+        closemessage
+        end
+
+Nettux_GiveRandomWildMon::
+        bufferspeciesname STR_VAR_1, VAR_NETTUX_ENCOUNTER
+        setvar VAR_TEMP_TRANSFERRED_SPECIES, VAR_NETTUX_ENCOUNTER
+        givemon VAR_NETTUX_ENCOUNTER, 5
+        compare VAR_RESULT, MON_GIVEN_TO_PARTY
+        goto_if_eq Nettux_EventScript_SendPokemonToParty
+        compare VAR_RESULT, MON_GIVEN_TO_PC
+        goto_if_eq Nettux_EventScript_SendPokemonToPC
+        end
+
+Nettux_EventScript_SendPokemonToParty::
+        playfanfare MUS_OBTAIN_ITEM
+        msgbox Nettux_Text_GotThePokemon, MSGBOX_DEFAULT
+        waitfanfare
+        goto Nettux_EventScript_NicknamePartyMon
+        end
+
+Nettux_EventScript_NicknamePartyMon::
+        msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
+        compare VAR_RESULT, YES
+        call_if_eq Nettux_EventScript_DoNicknamePartyMon
+        closemessage
+        return
+
+Nettux_EventScript_DoNicknamePartyMon:
+        call Common_EventScript_GetGiftMonPartySlot
+        call Common_EventScript_NameReceivedPartyMon
+        return
+
+Nettux_EventScript_SendPokemonToPC::
+        playfanfare MUS_OBTAIN_ITEM
+        msgbox Nettux_Text_GotThePokemon, MSGBOX_DEFAULT
+        waitfanfare
+        goto Nettux_EventScript_NicknameBoxMon
+        end
+
+Nettux_EventScript_NicknameBoxMon:
+        msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
+        compare VAR_RESULT, YES
+        call_if_eq Nettux_EventScript_DoNicknameBoxMon
+        closemessage
+        return
+
+Nettux_EventScript_DoNicknameBoxMon:
+        call Common_EventScript_NameReceivedBoxMon
+        return
+
+Nettux_Text_DoYouWantThisPokemon:
+        .string "Will you take this POKéMON?$"
+
+Nettux_Text_WantAnotherPokemon:
+        .string "Do you want a different POKéMON?$"
+
 NettuxHelper_Text_NatureChanged:
         .string "Nature changed.$"
 
 NettuxHelper_TeraTrain_Text_0:
-        .string "Tera train a pokemon in exchange\l"
+        .string "Tera train a POKéMON in exchange\l"
         .string "for a HEART SCALE?$"
 
 NettuxHelper_TeraTrain_Text_1:
@@ -1242,7 +1311,7 @@ NettuxWouldYouLikeToInflictAStatus:
 
 Nettux_WouldYouLikeToRestYourPkmn:
         .string "Would you like to heal\n"
-	.string "or inflict a status?$"
+      	.string "or inflict a status?$"
 
 NettuxHelper_EventScript_Move_Relearner_Text_0:
         .string "I can make your POKéMON relearn\n"
@@ -1251,3 +1320,6 @@ NettuxHelper_EventScript_Move_Relearner_Text_0:
 
 NettuxPure_Text_WhichNature:
         .string "Which nature would you like?$"
+
+Nettux_Text_GotThePokemon:
+        .string "Here you go!$"
